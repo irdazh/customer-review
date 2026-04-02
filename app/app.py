@@ -36,10 +36,13 @@ def adjusted_prediction(model, text, priors, labels):
 
     return labels[label_idx], adjusted
 
-def get_topic(lda_model, vectorizer, text):
+def get_topic(lda_model, vectorizer, text, sentiment_label=None):
     X = vectorizer.transform([text])
+    if sentiment_label=="negative":
+        lda_model = lda_neg
+    else: lda_model = lda_pos
+    
     topic_dist = lda_model.transform(X)
-
     topic_idx = topic_dist.argmax()
 
     return topic_idx, topic_dist
@@ -57,16 +60,18 @@ df = load_data()
 
 @st.cache_resource
 def load_model():
-    model_lr = joblib.load('models/basic_model_lr.joblib')
-    return model_lr
+    model = joblib.load('models/basic_model_lr.joblib')
+    vectorizer = joblib.load('models/vectorizer.joblib')
+    lda_neg = joblib.load('models/lda_neg.joblib')
+    lda_pos = joblib.load('models/lda_pos.joblib')
 
-model = load_model()
+    return model, vectorizer, lda_neg, lda_pos
+
+model, vectorizer, lda_neg, lda_pos = load_model()
 
 # MODEL idk donwloader?
 labels = model.classes_.tolist()
 priors = df["sentiment_label"].value_counts(normalize=True).reindex(labels).fillna(0).tolist()
-
-
 
 # SIDEBAR =========================
 st.title("🛍️ Tokopedia Review Analysis")
@@ -102,6 +107,13 @@ with tab1:
     ax.grid(axis='y', linestyle='--', alpha=0.5)
     st.pyplot(fig)
 
+    st.markdown("""
+    **Insight:** See the imbalanced dataset over there? With positive reviews 
+    account for around 93 percent? I thought of doing nothing about it, but then remember
+    I got one card on my sleeve: probability adjustment! (Well, it's kinda similar with
+    my final project.)
+    """)
+
     st.subheader("📉 Quarterly Negative Trend (%)")
 
     df["review_date"] = pd.to_datetime(df["review_date"])
@@ -126,6 +138,13 @@ with tab1:
     ax.spines['right'].set_visible(False)
     ax.grid(axis='y', linestyle='--', alpha=0.5)
     st.pyplot(fig)
+    
+    st.markdown("""
+    **Insight:** Except of few anomalies in the early years (probably due
+    to a fewer user or IDK), the proportion of negative review tends to be stable, 
+    at least in a long period, although in short period, there seems to have a bit 
+    of fluctuations. You may check them in detail, but for now, who cares? 
+    """)
 
     st.subheader("Review Length Distribution")
     fig, ax = plt.subplots()
@@ -134,6 +153,12 @@ with tab1:
     ax.set_ylabel("Review Length")
     st.pyplot(fig)
 
+    st.markdown("""
+    **Insight:** Most reviews (~99 percent) have short length (under 60 words), with 
+    median just under 10 words. Therefore, I don't think a complex model that can understand 
+    context will help with the classification. Rather, I chose a simpler approach 
+    based on keywords, using TF-IDF. 
+                """)
 
 # SENTIMENT ANALYSIS =========================
 # with tab2:
@@ -191,7 +216,8 @@ with tab3:
     ax.set_ylabel("Count")
     st.pyplot(fig)
 
-    # sample review
+    st.subheader("Sample Reviews")
+
     topics = st.selectbox(
         "Select Topics",
         df["dominant_topic"].unique()
@@ -211,7 +237,7 @@ with tab4:
 
     user_input = st.text_area(
         "Input the review:",
-        placeholder="Example: barang datang terlambat dan kemasan rusak..."
+        placeholder="Example: barang datang terlambat, kurir lama, dan kemasan rusak..."
     )
 
     if st.button("Analyze"):
@@ -236,21 +262,24 @@ with tab4:
             # --- Probability display ---
             st.write("Adjusted Confidence:")
 
-            for i, l in enumerate(labels):
-                st.write(f"- {l.capitalize()}: {probs[i]:.2f}")
+            sorted_idx = np.argsort(probs)[::-1]
+            for i in sorted_idx:
+                st.write(f"- {labels[i]}: {probs[i]:.2f}")
 
-            # # --- Topic ---
-            # topic_idx, topic_dist = get_topic(
-            #     lda_model, vectorizer, user_input
-            # )
+            # --- Topic ---
+            topic_idx, topic_dist = get_topic(
+                lda_neg, vectorizer, user_input, sentiment_label=label
+            )
 
-            # topic_labels = {
-            #     0: "Product Quality Issue",
-            #     1: "Delivery & Shipping",
-            #     2: "Product Expectation Match",
-            #     3: "Packaging Problem",
-            #     4: "General Experience"
-            # }
+            # mapping if label == negative: from 012 to 120
+            if label == "negative":
+                topic_idx = (topic_idx + 1) % 3
 
-            # st.subheader("🧠 Topic Insight")
-            # st.write(f"Most related topic: **{topic_labels.get(topic_idx, 'Unknown')}**")
+            topic_labels = {
+                0: "Product Expectation Match",
+                1: "Product Quality",
+                2: "Delivery & Packaging"
+            }
+
+            st.subheader("Topic Insight")
+            st.write(f"Most related topic: **{topic_labels.get(topic_idx, 'Unknown')}**")
