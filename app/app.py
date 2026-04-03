@@ -19,6 +19,7 @@ def without_hue(plot, feature, yp=20):
 def adjusted_prediction(model, text, priors, labels):
     # X = vectorizer.transform([text])
     X = [text]
+    X = pd.DataFrame({'clean_text': [text]})
 
     probs = model.predict_proba(X)[0]  # shape: (3,)
 
@@ -47,6 +48,7 @@ def get_topic(lda_model, vectorizer, text, sentiment_label=None):
 
     return topic_idx, topic_dist
 
+# from utils import sparse_to_array
 def sparse_to_array(X):
     return X.toarray()
 
@@ -283,3 +285,10 @@ with tab4:
 
             st.subheader("Topic Insight")
             st.write(f"Most related topic: **{topic_labels.get(topic_idx, 'Unknown')}**")
+
+
+# Temporary code in app.py
+if st.sidebar.button("🔨 Emergency Retrain"):
+    import subprocess
+    subprocess.run(["python", "scripts/train.py"])
+    st.sidebar.success("Model retrained on Cloud hardware!")
