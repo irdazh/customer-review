@@ -150,10 +150,9 @@ Adjust using `p / ((prior + 0.5) / 2)`:
 
 ### Dashboard Preview
 
-For a full demo (tho kinda fai), follow [this link!](https://customer-review.streamlit.app/)
+For a full demo (tho kinda fail), follow [this link!](https://customer-review.streamlit.app/)
 
-![Overview](outputs/overview.png)
-![Topic Insights](outputs/topic.png)
+![Overview](outputs/overview.png) ![Topic Insights](outputs/topic.png)
 
 ---
 
