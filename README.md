@@ -1,5 +1,8 @@
 # Tokopedia Review Analysis (Sentiment + Topic Modeling)
 
+- Github pages: https://irdazh.github.io/posts/customer-review/
+- Live demo: https://customer-review.streamlit.app/
+
 ## Project Overview
 This project analyzes customer reviews from Tokopedia to understand:
 - Customer sentiment (positive, neutral, negative)
@@ -8,11 +11,9 @@ This project analyzes customer reviews from Tokopedia to understand:
 
 The final output is an interactive dashboard built with Streamlit. Nah, I failed to deploy it online. Well, pity of me. Any suggestions or corrections are really appreciated. Please, and thanks. 
 
----
 
 ## Dataset & Preprocessing
 
-## Dataset
 I used two dataset from Kaggle: 
 1. [Tokopedia Product Reviews 2025](https://www.kaggle.com/datasets/salmanabdu/tokopedia-product-reviews-2025) dataset that contain around 65k samples of product reviews scraped from Tokopedia (in Indonesian of course); it contains 13 columns including review text, date, shop and product information, rating, and sentiment label. 
 2. [kamus-alay](https://www.kaggle.com/datasets/oktasn/kamus-alay) dataset that contain informal Indonesian slang words to normalize text into standard Indonesian language. It wasn't 100 percent suitable for this case, but hey what's that horrific things over there??? 
@@ -35,7 +36,6 @@ Notes:
 - Removed empty text (0 words)
 - Normalized slang words
 
----
 
 ## Exploratory Data Analysis
 
@@ -55,7 +55,6 @@ Including **stopwords** we have:
 **Neutral Reviews**
 - yang, dan, di, tidak, ada, tapi, enggak
 
----
 
 ## Modeling (Sentiment Classification)
 
@@ -82,10 +81,9 @@ Including **stopwords** we have:
 - HistGradientBoosting performs slightly better on minority classes
 - However, training time is ~20x longer
 
-### Final Choice
-✅ Logistic Regression (best trade-off between performance and efficiency)
+### Final Choice    
+Logistic Regression (best trade-off between performance and efficiency)
 
----
 
 ## Probability Adjustment (Improvement)
 
@@ -103,7 +101,6 @@ Adjust using `p / ((prior + 0.5) / 2)`:
 - Maintains strong performance on positive class
 - Overall F1 increased from **0.51 → 0.59**
 
----
 
 ## Topic Modeling
 
@@ -126,7 +123,6 @@ Adjust using `p / ((prior + 0.5) / 2)`:
 2. Delivery & Packaging
 3. Product Match / Expectation
 
----
 
 ## Dashboard Features
 
@@ -154,7 +150,6 @@ For a full demo (tho kinda fail), follow [this link!](https://customer-review.st
 
 ![Overview](outputs/overview.png) ![Topic Insights](outputs/topic.png)
 
----
 
 ## Tech Stack
 - Python
@@ -170,3 +165,16 @@ For a full demo (tho kinda fail), follow [this link!](https://customer-review.st
 - Accuracy alone is not a reliable metric
 - Simple models (Logistic Regression) can outperform complex ones when optimized properly
 - Topic modeling provides additional business insights beyond sentiment classification
+
+## Limitations
+- Dataset is highly imbalanced (~92% positive)
+- LDA topics are not always stable for short text
+- No lemmatization may reduce text normalization quality
+
+## Future Work
+- Try BERTopic for better topic coherence (tho for smaller dataset, i don't think it'll work)
+- Improve preprocessing with faster lemmatization
+- Deploy model as API (what is API?)
+- Enhance UI/UX of dashboard (ew*)
+
+
