@@ -68,8 +68,6 @@ Including **stopwords** we have:
 - Logistic Regression
 - HistGradientBoosting
 
----
-
 ## Evaluation Insights
 - Accuracy is misleading due to class imbalance
 - Macro F1-score used as main metric
@@ -158,7 +156,6 @@ For a full demo (tho kinda fail), follow [this link!](https://customer-review.st
 - Matplotlib, Seaborn
 - Streamlit
 
----
 
 ## Key Takeaways
 - Handling class imbalance is critical in real-world datasets
