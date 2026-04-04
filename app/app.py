@@ -19,7 +19,7 @@ def without_hue(plot, feature, yp=20):
 def adjusted_prediction(model, text, priors, labels):
     # X = vectorizer.transform([text])
     X = [text]
-    X = pd.DataFrame({'clean_text': [text]})
+    # X = pd.DataFrame({'clean_text': [text]})
 
     probs = model.predict_proba(X)[0]  # shape: (3,)
 
@@ -287,8 +287,8 @@ with tab4:
             st.write(f"Most related topic: **{topic_labels.get(topic_idx, 'Unknown')}**")
 
 
-# Temporary code in app.py
-if st.sidebar.button("🔨 Emergency Retrain"):
-    import subprocess
-    subprocess.run(["python", "scripts/train.py"])
-    st.sidebar.success("Model retrained on Cloud hardware!")
+# # Temporary code in app.py
+# if st.sidebar.button("🔨 Emergency Retrain"):
+#     import subprocess
+#     subprocess.run(["python", "scripts/train.py"])
+#     st.sidebar.success("Model retrained on Cloud hardware!")
