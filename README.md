@@ -1,32 +1,201 @@
-# Customer Review 
-NLP things
+# Tokopedia Review Analysis (Sentiment + Topic Modeling)
 
-- I'll copy from the website or so lol.
-- So, what's in here? 
-- Oh gosh, it'll be super complicated. I hate local things. Should've just done it earlier, I guess. Nope?  
-- 
+## Project Overview
+This project analyzes customer reviews from Tokopedia to understand:
+- Customer sentiment (positive, neutral, negative)
+- Key issues and themes using topic modeling
+- Patterns in review behavior
 
+The final output is an interactive dashboard built with Streamlit. Nah, I failed to deploy it online. Well, pity of me. Any suggestions or corrections are really appreciated. Please, and thanks. 
+---
 
-Nothing, lol. 
+## Dataset & Preprocessing
 
 ## Dataset
-Dataset used was [Tokopedia Product Reviews 2025](https://www.kaggle.com/datasets/salmanabdu/tokopedia-product-reviews-2025) from Kaggle dataset. I also use [kamus-alay](https://www.kaggle.com/datasets/oktasn/kamus-alay) dataset that contain informal Indonesian slang words to normalize text into standard Indonesian language. It wasn't 100 percent suitable for this case, but what's that? 
+I used two dataset from Kaggle: 
+1. [Tokopedia Product Reviews 2025](https://www.kaggle.com/datasets/salmanabdu/tokopedia-product-reviews-2025) dataset that contain around 65k samples of product reviews scraped from Tokopedia (in Indonesian of course); it contains 13 columns including review text, date, shop and product information, rating, and sentiment label. 
+2. [kamus-alay](https://www.kaggle.com/datasets/oktasn/kamus-alay) dataset that contain informal Indonesian slang words to normalize text into standard Indonesian language. It wasn't 100 percent suitable for this case, but hey what's that horrific things over there??? 
 
-## A Log
+### Data Cleaning
+- Removed duplicate reviews
+- Reduced excessive positive samples to mitigate imbalance (Actually, because i can't stand the training time. Yeah, it's not the best but whatever.)
+- Final dataset still highly skewed (~92.6% positive)
 
+### Text Preprocessing
+Steps applied:
+- Lowercasing
+- Remove links, HTML tags, punctuation, newlines, words containing numbers, single characters, and extra spaces. 
 
+Notes:
+- No lemmatization (too computationally expensive -- as i said it earlier)
+- No stopword removal (some stopwords carry meaning in context -- tho I'm not sure: like the word `tidak` or `enggak` that may imply the negative tone of a sentence)
 
+### Additional Cleaning
+- Removed empty text (0 words)
+- Normalized slang words
 
+---
 
+## Exploratory Data Analysis
 
+### Review Length
+- 99% of reviews have < 60 words (cleaned one)
+- Median length ≈ 9 words
 
-## Author's Note. 
-1. change the word counter viz --- no need to use plotly 
-2. basic, light modeling: using local
-3. complete modeling: using kaggle or colab whatsoever. 
-4. and download the model, and just use them lol
-5. not so training in here hehe. 
+### Most Common Words   
+Including **stopwords** we have: 
 
+**Positive Reviews**
+- dan, cepat, sesuai, barang, bagus, pengiriman
+
+**Negative Reviews**
+- yang, tidak, di, enggak, sudah, dan, saya
+
+**Neutral Reviews**
+- yang, dan, di, tidak, ada, tapi, enggak
+
+---
+
+## Modeling (Sentiment Classification)
+
+### Setup
+- TF-IDF (5000 features)
+- N-grams: (1,2)
+- Train-test split: 80/20 (stratified)
+
+### Models Used
+- Naive Bayes (tuned with GridSearchCV)
+- Logistic Regression
+- HistGradientBoosting
+
+---
+
+## Evaluation Insights
+- Accuracy is misleading due to class imbalance
+- Macro F1-score used as main metric
+
+### Results
+- Logistic Regression ≈ Naive Bayes
+- HistGradientBoosting performs slightly better on minority classes
+- However, training time is ~20x longer
+
+### Final Choice
+✅ Logistic Regression (best trade-off between performance and efficiency)
+
+---
+
+## Probability Adjustment (Improvement)
+
+Two approaches tested:
+
+### Case 1
+Adjust using class prior `p/prior`: 
+- Improves recall (negative & neutral)
+- Reduces positive class performance
+- No overall F1 improvement
+
+### Case 2 (Chosen)
+Adjust using `p / ((prior + 0.5) / 2)`:  
+- Improves recall & F1 (negative & neutral)
+- Maintains strong performance on positive class
+- Overall F1 increased from **0.51 → 0.59**
+
+---
+
+## Topic Modeling
+
+### Method
+- LDA (Latent Dirichlet Allocation)
+- TF-IDF vectorizer:
+  - max_df = 0.95
+  - min_df = 5
+  - ngram (1,2)
+- Indonesian + custom + domain stopwords
+
+### Approach
+- 1 vectorizer
+- Separate LDA models for:
+  - Positive reviews
+  - Negative reviews
+
+### Topics Identified
+1. Product Quality
+2. Delivery & Packaging
+3. Product Match / Expectation
+
+---
+
+## Dashboard Features
+
+### 1. Overview
+- Total reviews
+- Sentiment distribution
+- Quarterly negative trend
+- Review length distribution
+
+### 2. Topic Insights
+- Distribution of topics
+- Key themes:
+  - Product quality
+  - Delivery & packaging
+  - Product match / expectation
+
+### 3. Review Explorer
+- User input text
+- Sentiment prediction (with adjusted probability)
+- Topic inference
+
+---
+
+## Tech Stack
+- Python
+- Scikit-learn
+- Pandas / NumPy
+- Matplotlib, Seaborn
+- Streamlit
+
+---
+
+## Key Takeaways
+- Handling class imbalance is critical in real-world datasets
+- Accuracy alone is not a reliable metric
+- Simple models (Logistic Regression) can outperform complex ones when optimized properly
+- Topic modeling provides additional business insights beyond sentiment classification
+
+---
+
+## Miscellaneous
+
+### A Log   
+**Should've made this cleaner, but oh gosh**
+1. Wed, 11 march: plan, ideas, brainstorming, get the data: tokped
+2. Fri, 13 march: copasting from kaggle's notebooks, chatting with GPT, trying in kaggle doing raw reviews, do text cleaning, stuck at stopwords and lemmatization
+3. Mon, 23 march: explore #2, local, done classif, yet to change the viz and model eval 
+4. What to do now, 25 march: time to refactor, but not yet ready  — how about doing more. A quick model eval → let’s say it’s so easy. Topic modeling → kinda done well well well well well well well 
+5. 2 april: Building dashboard i guess
+6. 3 april – Refactor things. From playground notebooks → into eda, modeling, evaluation. To chatgpt → uhm what  now? Oh the conclusion.
+7. 4 april -- Lastly – do the markdown and else. Explain and showcase. 
+
+### Oh waht? 
+- READme viz
+    - overview dashboard -- main screen
+    - topic insights -- something visual 
+    - (optional) model comparison chart
+    - i guess we don't need viz's viz?
+    - avoid: too many charts, wordcloud spam, raw eda plots.... (sounds too much like me) 
+- GO visual in PAGEs! (oh, so add images after explanation eh?)
+    - after problem info: the dashboard ......
+    - after sentimetn discussion: sentiment dist
+    - after topic modeling explanation: topic what??? 
+    - explorer: try it yourself!
+    - else: overview, sentiment dist, negative trend chart, topic insights, explorer UI, still avoid messy EDA
+
+### Author's Note. 
+1. use kaggle or colab
+2. download the notebooks & model to local
+3. evaluate and make the app. LOL. 
+4. we DON't have to train the model in our burik local computer.
+5. and we AREN't that great anyway.
 
 ```
 # as a starter
@@ -42,64 +211,17 @@ source .venv/Scripts/activate #or .venv/bin/activate
 python -m pip install ipykernel [list of packages]
 ```
 
-### to chatgpt
-1. no duplicate reviews
-2. due too many dataset --> reduce the positive sentiment
-3. then we get 92.6% of positive sentiment
-4. mostly are makanan&minuman, and olahraga --- tho it's still useless for now. 
+### For useless LinkedIn poset: 
+1. hook, what u did, key insights: bullet, what makes it interesting, CTA
+2. 1/2 images only: dashboard overview & maybe explorer UI
 
-1. to text and lowercase
-3. remove links 4. remove html tags 5. remove punctuation 
-6. remove newlines 7. remove words containing numbers 
-7. remove single characters 8. remove extra spaces
-5. no lemmatization since it took too long
-6. no stopwords removal since some of them actually important (i guess)
-7. for cleaned words, length mostly (99 percent) below 60, with median just around 9. 
-
-More Cleaning
-1. drop 0 word
-2. normalized from slang words
-
-More eda, most common words
-1. positive: dan, cepat, sesuai, barang, bagus, pengiriman
-2. negative: yang, tidak, di, enggak , sudah, dan, saya
-3. neutral: yang, dan, di, tidak, ada, tapi, enggak
-
-Modeling
-1. read clean data
-2. model 1: sentiment classification (pos, neu, net)
-3. using tfidf: 5k features with ngrams 1,2 
-4. train test: 80/20, stratified
-5. 3 model used: nb, lr, and histgradient
-6. as for nb need to choose the parameter var_smoothing --> use gridsearch
-7. get the result
-
-Kinda conclusion
-- accuracy is pretty useless: all has similar accuracy (due to highly imbalanced dataset)
-- rather we could see from macro averaged f1-score (all label are considered equal): lr and nb got similar performance, while hg is a bit better, especially dealing with minority classes (negative and neutral)
-- but, considering it took 20 times longer training using hgb than lr and nb, then 
-- let's choose lr instead for future use: in case need a retraining, well that's that
-
-A bit of improvement, on lr model
-- case 1: dividing the predict proba with their prior probability for extreme adjustment 
-- case 2: dividng the predict proba with mean (prior probability and 0.5) to imitate MID-method in threshold moving. 
-- case 1: increase recall in negative and neutral class, increase f1 score in neutral class but decrease f1 score in positive class, overall, the same overall f1 score
-- case 2: increase recall and f1 score in negative and neutral class, f1 score in positive class stay the same, increase in overall f1 score from 0.51 to 0.59
-- we will implement case 2 with 0.54 in precision and 0.53 in recall for negative class. pretty good i guess. 
-- since we don't really care about neutral class, and then for positive class it still has a good accuracy 0.97 precision, and 0.98 recall. 
-
-Topic modeling
-1. Nah, just use LDA for now (kapan2 use BERTopic)
-2. Using vectorizer, with max_df 0.95, and min_df = 5, with indonesian stopwords, added with custom stopwords and domain stopwords, 
-an ngram range 1, 2
-3. Vectorizer fit transform to all data, 
-4. but then transform again for negative text sentiment --> do LDA for negative 
-5. and also transform again for positive text --> do LDA for positive
-6. So 1 vectorizer and 2 lda model. 
-7. 3 topics: product quality, delivery & packaging, and product matching
-
-
-App contain: 
-1. overview: total reviews, pos, and negative; sentiment distribution; quarterly negative trend; and review length distribution
-2. topic insights: product quality, delivery and packaging, product match --- with pretty similar proportion 25 to 40 percent thingy
-3. explorer: where user can input text to analyze and get the sentiment and also the topic. 
+```
+- 92% of customer reviews are positive... but is that really true? 
+- I built a sentiment + topic analysis dashboard using Tokopedia reviews (Although fail to deploy online. Sigh!)
+- I found that
+ - Accuracy is misleading due to imbalance
+ - Logistic Regression outperformed complex models in efficiency
+ - Topic modeling revealed 3 key issues: product quality, delivery & packaging, and expectation mismatch 
+- I also adjusted prediction probabilities to improve minorities class detection
+- Try the app / check the repo / kill ys!
+```
