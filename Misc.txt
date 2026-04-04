@@ -1,0 +1,62 @@
+
+## Miscellaneous
+
+### A Log   
+**Should've made this cleaner, but oh gosh**
+1. Wed, 11 march: plan, ideas, brainstorming, get the data: tokped
+2. Fri, 13 march: copasting from kaggle's notebooks, chatting with GPT, trying in kaggle doing raw reviews, do text cleaning, stuck at stopwords and lemmatization
+3. Mon, 23 march: explore #2, local, done classif, yet to change the viz and model eval 
+4. What to do now, 25 march: time to refactor, but not yet ready  — how about doing more. A quick model eval → let’s say it’s so easy. Topic modeling → kinda done well well well well well well well 
+5. 2 april: Building dashboard i guess
+6. 3 april – Refactor things. From playground notebooks → into eda, modeling, evaluation. To chatgpt → uhm what  now? Oh the conclusion.
+7. 4 april -- Lastly – do the markdown and else. Explain and showcase. 
+
+### Oh waht, images? 
+- READme viz
+    - overview dashboard -- main screen
+    - topic insights -- something visual 
+    - (optional) model comparison chart
+    - i guess we don't need viz's viz?
+    - avoid: too many charts, wordcloud spam, raw eda plots.... (sounds too much like me) 
+- GO visual in PAGEs! (oh, so add images after explanation eh?)
+    - after problem info: the dashboard ......
+    - after sentimetn discussion: sentiment dist
+    - after topic modeling explanation: topic what??? 
+    - explorer: try it yourself!
+    - else: overview, sentiment dist, negative trend chart, topic insights, explorer UI, still avoid messy EDA
+
+### Author's Note. 
+1. use kaggle or colab
+2. download the notebooks & model to local
+3. evaluate and make the app. LOL. 
+4. we DON't have to train the model in our burik local computer.
+5. and we AREN't that great anyway.
+
+```
+# as a starter
+mkdir house-price-prediction
+cd house-price-prediction
+
+# init the git, then
+mkdir app data models notebooks outputs scripts
+
+# create venv
+python -m venv .venv
+source .venv/Scripts/activate #or .venv/bin/activate
+python -m pip install ipykernel [list of packages]
+```
+
+### For useless LinkedIn poset: 
+1. hook, what u did, key insights: bullet, what makes it interesting, CTA
+2. 1/2 images only: dashboard overview & maybe explorer UI
+
+```
+- 92% of customer reviews are positive... but is that really true? 
+- I built a sentiment + topic analysis dashboard using Tokopedia reviews (Although fail to deploy online. Sigh!)
+- I found that
+ - Accuracy is misleading due to imbalance
+ - Logistic Regression outperformed complex models in efficiency
+ - Topic modeling revealed 3 key issues: product quality, delivery & packaging, and expectation mismatch 
+- I also adjusted prediction probabilities to improve minorities class detection
+- Try the app / check the repo / pages!
+```
