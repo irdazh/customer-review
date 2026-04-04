@@ -45,16 +45,9 @@ Notes:
 
 ### Most Common Words   
 Including **stopwords** we have: 
-
-**Positive Reviews**
-- dan, cepat, sesuai, barang, bagus, pengiriman
-
-**Negative Reviews**
-- yang, tidak, di, enggak, sudah, dan, saya
-
-**Neutral Reviews**
-- yang, dan, di, tidak, ada, tapi, enggak
-
+- **Positive Reviews**: dan, cepat, sesuai, barang, bagus, pengiriman
+- **Negative Reviews**: yang, tidak, di, enggak, sudah, dan, saya
+- **Neutral Reviews**: yang, dan, di, tidak, ada, tapi, enggak
 
 ## Modeling (Sentiment Classification)
 
